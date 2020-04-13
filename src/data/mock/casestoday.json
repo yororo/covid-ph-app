@@ -1,0 +1,14 @@
+{
+    "country": "Philippines",
+    "cases": 4648,
+    "todayCases": 220,
+    "deaths": 297,
+    "todayDeaths": 50,
+    "recovered": 197,
+    "active": 4154,
+    "critical": 1,
+    "casesPerOneMillion": 42,
+    "deathsPerOneMillion": 3,
+    "totalTests": 33814,
+    "testsPerOneMillion": 309
+}
