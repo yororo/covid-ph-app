@@ -5,6 +5,8 @@ jobs:
   build-and-test:
     executor:
       name: node/default
+    environment:
+      CHROME_BIN: /usr/bin/google-chrome
     steps:
       - checkout
       - node/with-cache:
