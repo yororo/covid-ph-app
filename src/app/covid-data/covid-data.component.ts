@@ -7,7 +7,7 @@ import { ICasesHistorical } from './objects/caseshistorical';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { ChartData } from './objects/chart/chartdata';
 import { ChartDataPoint } from './objects/chart/chartdatapoint';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { analyzeAndValidateNgModules, ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'cp-covid-data',
@@ -23,10 +23,9 @@ export class CovidDataComponent implements OnInit {
   chartDataCases: ChartData;
   chartDataDeaths: ChartData;
   chartDataRecoveries: ChartData;
-  multi: ChartData[];
-  view: any[] = [1300, 500];
 
-  // options
+  // total cases chart options
+  multi: ChartData[];
   legend: boolean = true;
   showLabels: boolean = true;
   animations: boolean = true;
@@ -39,8 +38,35 @@ export class CovidDataComponent implements OnInit {
   xAxisTicks: any[] = [];
   timeline: boolean = true;
 
+  // new cases chart options (reuse other options from total cases chart)
+  single: any[] = [];
+  // single: any[] = [
+  //   {
+  //     "name": "2020-04-01",
+  //     "value": 1
+  //   },
+  //   {
+  //     "name": "2020-04-02",
+  //     "value": 2
+  //   },
+  //   {
+  //     "name": "2020-04-03",
+  //     "value": 3
+  //   }
+  // ];
+  showXAxis = true;
+  showYAxis = true;
+  gradient = false;
+  showLegend = false;
+  xAxisLabelBar = 'Date';
+  yAxisLabelBar = 'New Cases';
+
   colorScheme = {
     domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
+  };
+
+  colorSchemeBar = {
+    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
 
   constructor(private casesService: CasesService) {
@@ -53,7 +79,11 @@ export class CovidDataComponent implements OnInit {
   }
 
   onResize(event) {
-    this.view = [event.target.innerWidth / 1.35, 500];
+    if(event.target.innerWidth < 600) {
+      this.legend = false;
+    } else {
+      this.legend = true;
+    }
   }
 
   getDateToday(): string {
@@ -61,6 +91,7 @@ export class CovidDataComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(window.innerWidth);
     this.casesService.getCasesToday().subscribe({
         next: casesToday => {
             this.casesToday = casesToday
@@ -76,6 +107,10 @@ export class CovidDataComponent implements OnInit {
         },
         error: err => this.errorMessage
     });
+    
+    if(window.innerWidth < 600) {
+      this.legend = false;
+    }
   }
 
   populateChartData(casesHistorical: ICasesHistorical): void {
@@ -86,7 +121,10 @@ export class CovidDataComponent implements OnInit {
     const deathsText: string = 'deaths';
     const recoveredText: string = 'recovered';
 
-    for (let [key, value] of Object.entries(this.casesHistorical.result)){
+    let previousKey: string;
+    let previousValue: number;
+    this.single = [];
+    for (let [key, value] of Object.entries(this.casesHistorical.result)) {
       if (value[confirmedText] < 1 && value[deathsText] < 1 && value[recoveredText] < 1) {
         continue;
       }
@@ -105,7 +143,36 @@ export class CovidDataComponent implements OnInit {
       cdpRecovered.name = key;
       cdpRecovered.value = value[recoveredText];
       this.chartDataRecoveries.series.push(cdpRecovered);
+
+      // calculate for bar chart
+      if (previousKey == null) {
+        this.single.push({ "name": key, "value": value[confirmedText] });
+      } else {
+        this.single.push({ "name": previousKey, "value": (value[confirmedText] - previousValue)});
+      }
+
+      previousKey = key;
+      previousValue = value[confirmedText];      
     }
+    // this.single = [];
+    // this.single.push({"name":"2020-04-01", "value":1});
+    // this.single.push({"name":"2020-04-02", "value":2});
+    // this.single.push({"name":"2020-04-03", "value":3});
+  //     this.single = [
+  //   {
+  //     "name": "2020-04-01",
+  //     "value": 1
+  //   },
+  //   {
+  //     "name": "2020-04-02",
+  //     "value": 2
+  //   },
+  //   {
+  //     "name": "2020-04-03",
+  //     "value": 3
+  //   }
+  // ];
+    console.log(this.single);
 
     const firstDate: Date = new Date(this.chartDataCases.series[0].name);
     const lastDate: Date = new Date(cdpConfirmed.name);

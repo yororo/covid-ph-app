@@ -34,6 +34,8 @@
         </div>
     </div>
 </div>
+<br>
+<br>
 <h2 align="center">Total Cases</h2>
 <br>
 <div class="container">
@@ -49,7 +51,26 @@
         [xAxisLabel]="xAxisLabel"
         [yAxisLabel]="yAxisLabel"
         [timeline]="timeline"
-        [results]="multi">
+        [results]="multi"
+        (window:resize)="onResize($event)">
     </ngx-charts-line-chart>
 </div>
+<h2 align="center">New Cases</h2>
+<br>
+<div class="container">
+    <div class="row" style="height: 500px">
+        <ngx-charts-bar-vertical
+            [scheme]="colorSchemeBar"
+            [results]="single"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [xAxisTicks]="xAxisTicks"
+            [yAxis]="showYAxis"
+            [legend]="showLegend"
+            [showXAxisLabel]="showXAxis"
+            [showYAxisLabel]="showYAxis"
+            [xAxisLabel]="xAxisLabelBar"
+            [yAxisLabel]="yAxisLabelBar">
+        </ngx-charts-bar-vertical>
+    </div>
 </div>
