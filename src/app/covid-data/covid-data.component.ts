@@ -8,6 +8,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { ChartData } from './objects/chart/chartdata';
 import { ChartDataPoint } from './objects/chart/chartdatapoint';
 import { analyzeAndValidateNgModules, ThrowStmt } from '@angular/compiler';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'cp-covid-data',
@@ -15,7 +16,6 @@ import { analyzeAndValidateNgModules, ThrowStmt } from '@angular/compiler';
   styleUrls: ['./covid-data.component.scss'],
 })
 export class CovidDataComponent implements OnInit {
-  options: any = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   casesToday: ICasesToday;
   casesHistorical: ICasesHistorical;
   errorMessage: string;
@@ -24,10 +24,13 @@ export class CovidDataComponent implements OnInit {
   chartDataDeaths: ChartData;
   chartDataRecoveries: ChartData;
 
+  totalCasesAsOf: string;
+  casesProgressionAsOf: string;
+  dailyCasesAsOf: string;
+
   // total cases chart options
   multi: ChartData[];
   legend: boolean = true;
-  showLabels: boolean = true;
   animations: boolean = true;
   xAxis: boolean = true;
   yAxis: boolean = true;
@@ -37,36 +40,26 @@ export class CovidDataComponent implements OnInit {
   yAxisLabel: string = 'Cases';
   xAxisTicks: any[] = [];
   timeline: boolean = true;
+  colorSchemeCasesProgressionChart = {
+    domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
+  };
 
   // new cases chart options (reuse other options from total cases chart)
-  single: any[] = [];
-  // single: any[] = [
-  //   {
-  //     "name": "2020-04-01",
-  //     "value": 1
-  //   },
-  //   {
-  //     "name": "2020-04-02",
-  //     "value": 2
-  //   },
-  //   {
-  //     "name": "2020-04-03",
-  //     "value": 3
-  //   }
-  // ];
-  showXAxis = true;
-  showYAxis = true;
+  single: any[];
   gradient = false;
   showLegend = false;
   xAxisLabelBar = 'Date';
   yAxisLabelBar = 'New Cases';
-
-  colorScheme = {
-    domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
+  colorSchemeDailyCasesChart = {
+    domain: ['#5AA454']
   };
 
-  colorSchemeBar = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+  // number chart
+  dataNumberChart: any[];
+  cardColor: string = '#232837';
+  numberChartHeightPx: number;
+  colorSchemeNumberChart = {
+    domain: ['#7aa3e5', '#5AA454', '#E44D25', '#CFC0BB']
   };
 
   constructor(private casesService: CasesService) {
@@ -78,23 +71,12 @@ export class CovidDataComponent implements OnInit {
     this.chartDataRecoveries.name = 'Recoveries';
   }
 
-  onResize(event) {
-    if(event.target.innerWidth < 600) {
-      this.legend = false;
-    } else {
-      this.legend = true;
-    }
-  }
-
-  getDateToday(): string {
-    return new Date().toLocaleString('en-PH', this.options);
-  }
-
   ngOnInit() {
-    console.log(window.innerWidth);
     this.casesService.getCasesToday().subscribe({
         next: casesToday => {
-            this.casesToday = casesToday
+            this.casesToday = casesToday;
+            this.populateNumberChartData(this.casesToday);
+            this.totalCasesAsOf = this.getAsOfDateString(new Date());
         },
         error: err => this.errorMessage
     });
@@ -108,12 +90,24 @@ export class CovidDataComponent implements OnInit {
         error: err => this.errorMessage
     });
     
-    if(window.innerWidth < 600) {
+    this.onResize(window.innerWidth);
+  }
+
+  onResize(windowWidth: number) {
+    if(windowWidth < 600) {
       this.legend = false;
+      this.numberChartHeightPx = 250;
+      this.showXAxisLabel = false;
+      this.showYAxisLabel = false;
+    } else {
+      this.legend = true;
+      this.numberChartHeightPx = 150;
+      this.showXAxisLabel = true;
+      this.showYAxisLabel = true;
     }
   }
 
-  populateChartData(casesHistorical: ICasesHistorical): void {
+  private populateChartData(casesHistorical: ICasesHistorical): void {
     let cdpConfirmed: ChartDataPoint;
     let cdpDeaths: ChartDataPoint;
     let cdpRecovered: ChartDataPoint;
@@ -123,69 +117,89 @@ export class CovidDataComponent implements OnInit {
 
     let previousKey: string;
     let previousValue: number;
+    let keyFormatted: string;
+    let lastDate: Date;
     this.single = [];
     for (let [key, value] of Object.entries(this.casesHistorical.result)) {
       if (value[confirmedText] < 1 && value[deathsText] < 1 && value[recoveredText] < 1) {
         continue;
       }
+      
+      keyFormatted = this.getDateKeyString(new Date(key));
 
       cdpConfirmed = new ChartDataPoint();
-      cdpConfirmed.name = key;
+      cdpConfirmed.name = keyFormatted;
       cdpConfirmed.value = value[confirmedText];
       this.chartDataCases.series.push(cdpConfirmed);
 
       cdpDeaths = new ChartDataPoint();
-      cdpDeaths.name = key;
+      cdpDeaths.name = keyFormatted;
       cdpDeaths.value = value[deathsText];
       this.chartDataDeaths.series.push(cdpDeaths);
 
       cdpRecovered = new ChartDataPoint();
-      cdpRecovered.name = key;
+      cdpRecovered.name = keyFormatted;
       cdpRecovered.value = value[recoveredText];
       this.chartDataRecoveries.series.push(cdpRecovered);
 
       // calculate for bar chart
       if (previousKey == null) {
-        this.single.push({ "name": key, "value": value[confirmedText] });
+        this.single.push({ "name": keyFormatted, "value": value[confirmedText] });
       } else {
         this.single.push({ "name": previousKey, "value": (value[confirmedText] - previousValue)});
       }
 
-      previousKey = key;
-      previousValue = value[confirmedText];      
+      previousKey = keyFormatted;
+      previousValue = value[confirmedText];
+      
+      // TODO: refactor to assign only at last index
+      lastDate = new Date(key);
     }
-    // this.single = [];
-    // this.single.push({"name":"2020-04-01", "value":1});
-    // this.single.push({"name":"2020-04-02", "value":2});
-    // this.single.push({"name":"2020-04-03", "value":3});
-  //     this.single = [
-  //   {
-  //     "name": "2020-04-01",
-  //     "value": 1
-  //   },
-  //   {
-  //     "name": "2020-04-02",
-  //     "value": 2
-  //   },
-  //   {
-  //     "name": "2020-04-03",
-  //     "value": 3
-  //   }
-  // ];
-    console.log(this.single);
 
+    // TODO: refactor 
+    this.dailyCasesAsOf = this.getAsOfDateString(lastDate);
+    this.casesProgressionAsOf = this.getAsOfDateString(lastDate);
+    this.setAxisTicks(cdpConfirmed);
+  }
+  
+  private setAxisTicks(cdpConfirmed: ChartDataPoint) {
     const firstDate: Date = new Date(this.chartDataCases.series[0].name);
     const lastDate: Date = new Date(cdpConfirmed.name);
-
-    const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-
     let dateTick: Date = new Date(firstDate);
     while (lastDate > dateTick) {
-      let [{ value: mo },,{ value: da },,{ value: ye }] = dtf.formatToParts(dateTick);
-      this.xAxisTicks.push(ye + '-' + mo + '-' + da);
-
-      dateTick.setDate(dateTick.getDate() + 7);
+      this.xAxisTicks.push(this.getDateKeyString(dateTick));
+      dateTick.setDate(dateTick.getDate() + 14);
     }
+  }
+
+  private getAsOfDateString(date: Date): string {
+    const dateTimeFormatter = new Intl.DateTimeFormat(undefined, 
+      { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    const [{ value: mo }, , { value: da }, , { value: ye }] = dateTimeFormatter.formatToParts(date);
+    return `${mo} ${da}, ${ye}`;
+  }
+
+  private getDateKeyString(date: Date): string {
+    const dateTimeFormatter = new Intl.DateTimeFormat(undefined, 
+      { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    const [{ value: mo }, , { value: da }, , { value: ye }] = dateTimeFormatter.formatToParts(date);
+    return `${mo}-${da}`;
+  }
+
+  private populateNumberChartData(casesToday: ICasesToday): void{
+    this.dataNumberChart = [
+      { "name":"Total", "value":casesToday.cases },
+      { "name":"Recovered", "value":casesToday.recovered },
+      { "name":"Deaths", "value":casesToday.deaths },
+      { "name":"Tests", "value":casesToday.totalTests }]
   }
 
 }
