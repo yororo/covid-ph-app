@@ -15,12 +15,14 @@
 </header>
 
 <!-- Body -->
-<main role="main" class='container main-con'>
-  <router-outlet></router-outlet>
+<main role="main" class="flex-shrink-0">
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
 </main>
 
 <!-- Footer -->
-<footer class="footer">
+<footer class="footer mt-auto py-3">
   <div class="container">
     <span class="text-muted">{{footerMessage}}</span>
   </div>

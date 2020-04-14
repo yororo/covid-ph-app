@@ -52,6 +52,10 @@ export class CovidDataComponent implements OnInit {
     this.chartDataRecoveries.name = 'Recoveries';
   }
 
+  onResize(event) {
+    this.view = [event.target.innerWidth / 1.35, 500];
+  }
+
   getDateToday(): string {
     return new Date().toLocaleString('en-PH', this.options);
   }
@@ -78,25 +82,28 @@ export class CovidDataComponent implements OnInit {
     let cdpConfirmed: ChartDataPoint;
     let cdpDeaths: ChartDataPoint;
     let cdpRecovered: ChartDataPoint;
+    const confirmedText: string = 'confirmed';
+    const deathsText: string = 'deaths';
+    const recoveredText: string = 'recovered';
 
     for (let [key, value] of Object.entries(this.casesHistorical.result)){
-      if (value["confirmed"] < 1 && value["deaths"] < 1 && value["recovered"] < 1) {
+      if (value[confirmedText] < 1 && value[deathsText] < 1 && value[recoveredText] < 1) {
         continue;
       }
 
       cdpConfirmed = new ChartDataPoint();
       cdpConfirmed.name = key;
-      cdpConfirmed.value = value["confirmed"];
+      cdpConfirmed.value = value[confirmedText];
       this.chartDataCases.series.push(cdpConfirmed);
 
       cdpDeaths = new ChartDataPoint();
       cdpDeaths.name = key;
-      cdpDeaths.value = value["deaths"];
+      cdpDeaths.value = value[deathsText];
       this.chartDataDeaths.series.push(cdpDeaths);
 
       cdpRecovered = new ChartDataPoint();
       cdpRecovered.name = key;
-      cdpRecovered.value = value["recovered"];
+      cdpRecovered.value = value[recoveredText];
       this.chartDataRecoveries.series.push(cdpRecovered);
     }
 
@@ -112,9 +119,6 @@ export class CovidDataComponent implements OnInit {
 
       dateTick.setDate(dateTick.getDate() + 7);
     }
-
-    // let [{ value: mo },,{ value: da },,{ value: ye }] = dtf.formatToParts(lastDate);
-    // this.xAxisTicks.push(ye + '-' + mo + '-' + da);
   }
 
 }

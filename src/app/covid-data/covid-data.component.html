@@ -1,7 +1,7 @@
 <h1>PH COVID-19 DATA</h1>
 <p>{{ getDateToday() }}</p>
 <div class="row" align="center">
-    <div class="col-sm">
+    <div class="col-sm mb-4">
         <div class="card">
             <h5 class="card-header">TOTAL</h5>
             <div class="card-body" *ngIf='casesToday'>
@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm">
+    <div class="col-sm mb-4">
         <div class="card">
             <h5 class="card-header">RECOVERED</h5>
             <div class="card-body" *ngIf='casesToday'>
@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm">
+    <div class="col-sm mb-4">
         <div class="card">
             <h5 class="card-header">DEATHS</h5>
             <div class="card-body" *ngIf='casesToday'>
@@ -25,7 +25,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm">
+    <div class="col-sm mb-4">
         <div class="card">
             <h5 class="card-header">TESTS</h5>
             <div class="card-body" *ngIf='casesToday'>
@@ -34,22 +34,22 @@
         </div>
     </div>
 </div>
-<br><br><br>
 <h2 align="center">Total Cases</h2>
 <br>
-<div class="row">
+<div class="container">
+    <div class="row" style="height: 500px">
     <ngx-charts-line-chart
-    [view]="view"
-    [scheme]="colorScheme"
-    [legend]="legend"
-    [showXAxisLabel]="showXAxisLabel"
-    [showYAxisLabel]="showYAxisLabel"
-    [xAxis]="xAxis"
-    [yAxis]="yAxis"
-    [xAxisTicks]="xAxisTicks"
-    [xAxisLabel]="xAxisLabel"
-    [yAxisLabel]="yAxisLabel"
-    [timeline]="timeline"
-    [results]="multi">
+        [scheme]="colorScheme"
+        [legend]="legend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxis]="xAxis"
+        [yAxis]="yAxis"
+        [xAxisTicks]="xAxisTicks"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [timeline]="timeline"
+        [results]="multi">
     </ngx-charts-line-chart>
+</div>
 </div>
