@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
-import { ICasesToday } from './objects/casestoday';
+import { ICasesToday } from './models/casestoday';
 import { CasesService } from './services/cases.service';
-import { ICasesHistorical } from './objects/caseshistorical';
+import { ICasesHistorical } from './models/caseshistorical';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { ChartData } from './objects/chart/chartdata';
-import { ChartDataPoint } from './objects/chart/chartdatapoint';
-import { analyzeAndValidateNgModules, ThrowStmt } from '@angular/compiler';
-import { stringify } from 'querystring';
+import { ChartData } from './models/chart/chartdata';
+import { ChartDataPoint } from './models/chart/chartdatapoint';
 
 @Component({
   selector: 'cp-covid-data',
@@ -29,7 +27,7 @@ export class CovidDataComponent implements OnInit {
   dailyCasesAsOf: string;
 
   // total cases chart options
-  multi: ChartData[];
+  chartDataTotalCases: ChartData[];
   legend: boolean = true;
   animations: boolean = true;
   xAxis: boolean = true;
@@ -45,7 +43,7 @@ export class CovidDataComponent implements OnInit {
   };
 
   // new cases chart options (reuse other options from total cases chart)
-  single: any[];
+  chartDataNewCases: any[];
   gradient = false;
   showLegend = false;
   xAxisLabelBar = 'Date';
@@ -55,7 +53,7 @@ export class CovidDataComponent implements OnInit {
   };
 
   // number chart
-  dataNumberChart: any[];
+  chartDataNumbers: any[];
   cardColor: string = '#232837';
   numberChartHeightPx: number;
   colorSchemeNumberChart = {
@@ -85,15 +83,20 @@ export class CovidDataComponent implements OnInit {
         next: casesHistorical => {
             this.casesHistorical = casesHistorical;
             this.populateChartData(this.casesHistorical);
-            this.multi = [this.chartDataCases, this.chartDataDeaths, this.chartDataRecoveries];
+            this.chartDataTotalCases = [this.chartDataCases, this.chartDataDeaths, this.chartDataRecoveries];
         },
         error: err => this.errorMessage
     });
     
-    this.onResize(window.innerWidth);
+    this.adjustElementsOnResize(window.innerWidth);
   }
 
-  onResize(windowWidth: number) {
+  @HostListener('window:resize', ['$event'])
+  onResizeEvent(event: any) {
+    this.adjustElementsOnResize(event.target.innerWidth);
+  }
+
+  adjustElementsOnResize(windowWidth: number) {
     if(windowWidth < 600) {
       this.legend = false;
       this.numberChartHeightPx = 250;
@@ -119,7 +122,7 @@ export class CovidDataComponent implements OnInit {
     let previousValue: number;
     let keyFormatted: string;
     let lastDate: Date;
-    this.single = [];
+    this.chartDataNewCases = [];
     for (let [key, value] of Object.entries(this.casesHistorical.result)) {
       if (value[confirmedText] < 1 && value[deathsText] < 1 && value[recoveredText] < 1) {
         continue;
@@ -144,9 +147,9 @@ export class CovidDataComponent implements OnInit {
 
       // calculate for bar chart
       if (previousKey == null) {
-        this.single.push({ "name": keyFormatted, "value": value[confirmedText] });
+        this.chartDataNewCases.push({ "name": keyFormatted, "value": value[confirmedText] });
       } else {
-        this.single.push({ "name": previousKey, "value": (value[confirmedText] - previousValue)});
+        this.chartDataNewCases.push({ "name": previousKey, "value": (value[confirmedText] - previousValue)});
       }
 
       previousKey = keyFormatted;
@@ -195,7 +198,7 @@ export class CovidDataComponent implements OnInit {
   }
 
   private populateNumberChartData(casesToday: ICasesToday): void{
-    this.dataNumberChart = [
+    this.chartDataNumbers = [
       { "name":"Total", "value":casesToday.cases },
       { "name":"Recovered", "value":casesToday.recovered },
       { "name":"Deaths", "value":casesToday.deaths },

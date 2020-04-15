@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { ICasesToday } from '../objects/casestoday';
+import { ICasesToday } from '../models/casestoday';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ICasesHistorical } from '../objects/caseshistorical';
+import { ICasesHistorical } from '../models/caseshistorical';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CasesService {
     private casesTodayUrl = 'https://coronavirus-19-api.herokuapp.com/countries/philippines';
-    // private casesTodayUrl = 'data/mock/casestoday.json';
     private casesHistoricalUrl = 'https://covidapi.info/api/v1/country/PHL';
 
     constructor(private http: HttpClient) {}

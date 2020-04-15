@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title: string = 'COVID-19 PH';
-  footerMessage: string = 'Keep safe. Stay at home. Sources: https://covidapi.info and https://coronavirus-19-api.herokuapp.com.';
+  footerMessage: string = 'Stay at home. Always wash hands. Keep safe. Visit https://ncovtracker.doh.gov.ph/ for more information.';
+  footerSources: string = 'Sources: https://covidapi.info, https://coronavirus-19-api.herokuapp.com and https://coronavirus-ph-api.herokuapp.com/#/.';
 }
