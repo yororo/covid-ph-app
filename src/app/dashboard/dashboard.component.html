@@ -1,0 +1,65 @@
+<br>
+<div align="center">
+    <h2>Total Cases</h2>
+    <p class="small">as of {{ totalCasesAsOf | date: 'MMM d, y' }}</p>
+    <br>
+</div>
+<div class="container">
+    <div class="row" [style.height.px]="numberChartHeightPx">
+        <ngx-charts-number-card
+            [scheme]="todaysCasesChart.options.colorScheme"
+            [results]="todaysCasesChart.data"
+            [cardColor]="todaysCasesChart.options.cardColor">
+        </ngx-charts-number-card>
+    </div>
+</div>
+<br>
+<hr style="width:60%">
+<br>
+<div align="center">
+    <h2>Cases Progression</h2>
+    <p class="small">as of {{ casesProgressionAsOf | date: 'MMM d, y' }}</p>
+    <br>
+</div>
+<div class="container">
+    <div class="row" style="height: 500px">
+        <ngx-charts-line-chart
+            [scheme]="casesProgressionChart.options.colorScheme"
+            [legend]="casesProgressionChart.options.legend"
+            [showXAxisLabel]="casesProgressionChart.options.showXAxisLabel"
+            [showYAxisLabel]="casesProgressionChart.options.showYAxisLabel"
+            [xAxis]="casesProgressionChart.options.xAxis"
+            [yAxis]="casesProgressionChart.options.yAxis"
+            [xAxisLabel]="casesProgressionChart.options.xAxisLabel"
+            [yAxisLabel]="casesProgressionChart.options.yAxisLabel"
+            [xAxisTicks]="casesProgressionChart.options.xAxisTicks"
+            [results]="casesProgressionChart.data">
+        </ngx-charts-line-chart>
+</div>
+<br>
+<hr style="width:60%">
+<br>
+<div align="center">
+    <h2>Daily Cases</h2>
+    <p class="small">as of {{ dailyCasesAsOf | date: 'MMM d, y' }}</p>
+</div>
+<div class="container">
+    <div class="row" style="height: 500px">
+        <ngx-charts-bar-vertical
+            [scheme]="dailyCasesChart.options.colorScheme"
+            [results]="dailyCasesChart.data"
+            [xAxis]="dailyCasesChart.options.xAxis"
+            [xAxisTicks]="dailyCasesChart.options.xAxisTicks"
+            [yAxis]="dailyCasesChart.options.yAxis"
+            [legend]="dailyCasesChart.options.legend"
+            [showXAxisLabel]="dailyCasesChart.options.showXAxisLabel"
+            [showYAxisLabel]="dailyCasesChart.options.showYAxisLabel"
+            [xAxisLabel]="dailyCasesChart.options.xAxisLabel"
+            [yAxisLabel]="dailyCasesChart.options.yAxisLabel">
+        </ngx-charts-bar-vertical>
+    </div>
+</div>
+<br>
+<br>
+<br>
+<br>

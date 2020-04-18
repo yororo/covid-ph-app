@@ -1,29 +1,29 @@
 import { Injectable } from '@angular/core';
-import { ICasesToday } from '../models/casestoday';
+import { ICasesTodayRaw } from '../interfaces/casestodayraw';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { ICasesHistorical } from '../models/caseshistorical';
+import { ICasesHistoricalRaw } from '../interfaces/caseshistoricalraw';
 
 @Injectable({
     providedIn: 'root'
 })
-export class CasesService {
+export class DataService {
     private casesTodayUrl = 'https://coronavirus-19-api.herokuapp.com/countries/philippines';
     private casesHistoricalUrl = 'https://covidapi.info/api/v1/country/PHL';
 
     constructor(private http: HttpClient) {}
 
-    getCasesToday(): Observable<ICasesToday> {
-        return this.http.get<ICasesToday>(this.casesTodayUrl).pipe(
+    getCasesToday(): Observable<ICasesTodayRaw> {
+        return this.http.get<ICasesTodayRaw>(this.casesTodayUrl).pipe(
             tap(data => console.log('getCasesToday: ' + JSON.stringify(data))),
             catchError(this.handleError)
         );
     }
     
-    getCasesHistorical(): Observable<ICasesHistorical> {
-        return this.http.get<ICasesHistorical>(this.casesHistoricalUrl).pipe(
-            tap(data => console.log('getCasesHistorical: ' + JSON.stringify(data))),
+    getCasesHistorical(): Observable<ICasesHistoricalRaw> {
+        return this.http.get<ICasesHistoricalRaw>(this.casesHistoricalUrl).pipe(
+            tap(data => console.log('[DATA SERVICE]: getCasesHistorical: ' + JSON.stringify(data))),
             catchError(this.handleError)
         );
     }

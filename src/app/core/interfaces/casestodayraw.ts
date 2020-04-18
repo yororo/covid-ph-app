@@ -1,4 +1,4 @@
-export interface ICasesToday {
+export interface ICasesTodayRaw {
     country: string;
     cases: number;
     todayCases: number;

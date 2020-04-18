@@ -6,25 +6,22 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
-import { CovidDataComponent } from './covid-data/covid-data.component';
 
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    CovidDataComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     SharedModule,
-    NgxChartsModule,
+    DashboardModule,
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule.forRoot([
-      { path: 'covid-data', component: CovidDataComponent },
-      { path: '', redirectTo: 'covid-data', pathMatch: 'full' },
-      { path: '**', redirectTo: 'covid-data', pathMatch: 'full' }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
     ])
   ],
   providers: [],
