@@ -9,14 +9,14 @@ import { ICasesHistoricalRaw } from '../interfaces/caseshistoricalraw';
     providedIn: 'root'
 })
 export class DataService {
-    private casesTodayUrl = 'https://coronavirus-19-api.herokuapp.com/countries/philippines';
-    private casesHistoricalUrl = 'https://covidapi.info/api/v1/country/PHL';
+    private readonly casesTodayUrl = 'https://coronavirus-19-api.herokuapp.com/countries/philippines';
+    private readonly casesHistoricalUrl = 'https://covidapi.info/api/v1/country/PHL';
 
     constructor(private http: HttpClient) {}
 
     getCasesToday(): Observable<ICasesTodayRaw> {
         return this.http.get<ICasesTodayRaw>(this.casesTodayUrl).pipe(
-            tap(data => console.log('getCasesToday: ' + JSON.stringify(data))),
+            tap(data => console.log('[DATA SERVICE]: getCasesToday: ' + JSON.stringify(data))),
             catchError(this.handleError)
         );
     }
