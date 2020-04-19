@@ -6,17 +6,16 @@ import { IChartBar } from '../interfaces/chartbar';
 import { IChartBarData } from '../interfaces/chartbardata';
 import { ICasesTodayRaw } from '../interfaces/casestodayraw';
 import { IChartNumbers } from '../interfaces/chartnumbers';
-import { GlobalConstants } from '../globalconstants';
-import { DateUtility } from '../utility/dateutility';
 import { IChartNumbersData } from '../interfaces/chartnumbersdata';
 import { IChartNumbersOption } from '../interfaces/chartnumbersoption';
+import { GlobalConstants } from '../globalconstants';
+import { DateUtility } from '../utility/dateutility';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ChartService {
-    errorMessage: string;
-
+    
     //#region Public Methods
     getTotalCases(casesToday: ICasesTodayRaw): IChartNumbers {
         return this.generateCasesTodayData(casesToday);
@@ -34,10 +33,10 @@ export class ChartService {
     //#region Private Methods
     private generateCasesTodayData(casesToday: ICasesTodayRaw): IChartNumbers {
         let data: IChartNumbersData[] = [
-            { name:"Total", value:casesToday.cases },
-            { name:"Recovered", value:casesToday.recovered },
-            { name:"Deaths", value:casesToday.deaths },
-            { name:"Tests", value:casesToday.totalTests }
+            { name:GlobalConstants.CHART_TOTALCASES_LABEL_TOTAL, value:casesToday.cases },
+            { name:GlobalConstants.CHART_TOTALCASES_LABEL_RECOVERED, value:casesToday.recovered },
+            { name:GlobalConstants.CHART_TOTALCASES_LABEL_DEATHS, value:casesToday.deaths },
+            { name:GlobalConstants.CHART_TOTALCASES_LABEL_TESTS, value:casesToday.totalTests }
         ]
 
         return {
@@ -68,9 +67,9 @@ export class ChartService {
 
         return {
             data: [ 
-                {name: GlobalConstants.CHARTLINE_LABEL_CONFIRMED, series: confirmedData}, 
-                {name: GlobalConstants.CHARTLINE_LABEL_DEATHS, series: deathsData}, 
-                {name: GlobalConstants.CHARTLINE_LABEL_RECOVERED, series: recoveredData}
+                {name: GlobalConstants.CHART_CASESPROG_LABEL_CONFIRMED, series: confirmedData}, 
+                {name: GlobalConstants.CHART_CASESPROG_LABEL_DEATHS, series: deathsData}, 
+                {name: GlobalConstants.CHART_CASESPROG_LABEL_RECOVERED, series: recoveredData}
             ],
             options: 
                 this.getCasesProgressionChartOptions(new Date(confirmedData[0].name), new Date(confirmedData[confirmedData.length - 1].name), 14)
@@ -126,8 +125,8 @@ export class ChartService {
             yAxis: true,
             showYAxisLabel: true,
             showXAxisLabel: true,
-            xAxisLabel: 'Date',
-            yAxisLabel: 'Cases',
+            xAxisLabel: GlobalConstants.CHART_CASESPROG_XAXIS_LABEL,
+            yAxisLabel: GlobalConstants.CHART_CASESPROG_YAXIS_LABEL,
             xAxisTicks: this.getAxisTicks(firstDate, lastDate, increments),
             colorScheme: {
                 domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
@@ -144,8 +143,8 @@ export class ChartService {
             yAxis: true,
             showYAxisLabel: true,
             showXAxisLabel: true,
-            xAxisLabel: 'Date',
-            yAxisLabel: 'New Cases',
+            xAxisLabel: GlobalConstants.CHART_DAILYCASES_XAXIS_LABEL,
+            yAxisLabel: GlobalConstants.CHART_DAILYCASES_YAXIS_LABEL,
             xAxisTicks: this.getAxisTicks(firstDate, lastDate, increments),
             colorScheme: {
                 domain: ['#5AA454']
