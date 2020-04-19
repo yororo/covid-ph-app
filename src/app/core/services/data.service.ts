@@ -5,31 +5,29 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ICasesHistoricalRaw } from '../interfaces/caseshistoricalraw';
 import { ICasesHistoricalDetailedRaw } from '../interfaces/caseshistoricaldetailedraw';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DataService {
-    private readonly CASES_TODAY_URL = 'https://coronavirus-19-api.herokuapp.com/countries/philippines';
-    private readonly CASES_HISTORICAL_URL = 'https://covidapi.info/api/v1/country/PHL';
-    private readonly CASES_HISTORICAL_DETAILED_URL = 'https://coronavirus-ph-api.herokuapp.com/cases';
 
     constructor(private http: HttpClient) {}
 
     getCasesToday(): Observable<ICasesTodayRaw> {
-        return this.http.get<ICasesTodayRaw>(this.CASES_TODAY_URL).pipe(
+        return this.http.get<ICasesTodayRaw>(environment.apiUrlCoronavirus19Api).pipe(
             catchError(this.handleError)
         );
     }
     
     getCasesHistorical(): Observable<ICasesHistoricalRaw> {
-        return this.http.get<ICasesHistoricalRaw>(this.CASES_HISTORICAL_URL).pipe(
+        return this.http.get<ICasesHistoricalRaw>(environment.apiUrlCovidApi).pipe(
             catchError(this.handleError)
         );
     }
 
     getCasesHistoricalDetailed(): Observable<ICasesHistoricalDetailedRaw[]> {
-        return this.http.get<ICasesHistoricalDetailedRaw[]>(this.CASES_HISTORICAL_DETAILED_URL).pipe(
+        return this.http.get<ICasesHistoricalDetailedRaw[]>(environment.apiUrlCoronavirusPhApi).pipe(
             catchError(this.handleError)
         );
     }
