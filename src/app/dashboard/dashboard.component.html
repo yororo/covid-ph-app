@@ -4,7 +4,7 @@
     <p class="small">as of {{ totalCasesAsOf | date: 'MMM d, y' }}</p>
     <br>
 </div>
-<div class="container">
+<div class="container" align="center" *ngIf='todaysCasesChart'>
     <div class="row" [style.height.px]="numberChartHeightPx">
         <ngx-charts-number-card
             [scheme]="todaysCasesChart.options.colorScheme"
@@ -21,7 +21,7 @@
     <p class="small">as of {{ casesProgressionAsOf | date: 'MMM d, y' }}</p>
     <br>
 </div>
-<div class="container">
+<div class="container" align="center" *ngIf='casesProgressionChart'>
     <div class="row" style="height: 500px">
         <ngx-charts-line-chart
             [scheme]="casesProgressionChart.options.colorScheme"
@@ -43,7 +43,7 @@
     <h2>Daily Cases</h2>
     <p class="small">as of {{ dailyCasesAsOf | date: 'MMM d, y' }}</p>
 </div>
-<div class="container">
+<div class="container" align="center" *ngIf='dailyCasesChart'>
     <div class="row" style="height: 500px">
         <ngx-charts-bar-vertical
             [scheme]="dailyCasesChart.options.colorScheme"
@@ -56,6 +56,21 @@
             [xAxisLabel]="dailyCasesChart.options.xAxisLabel"
             [yAxisLabel]="dailyCasesChart.options.yAxisLabel">
         </ngx-charts-bar-vertical>
+    </div>
+</div>
+<br>
+<hr style="width:50%">
+<br>
+<div align="center">
+    <h2>Cases by Region</h2>
+    <p class="small">as of {{ casesByRegionAsOf | date: 'MMM d, y' }}</p>
+</div>
+<div class="container" align="center" *ngIf='casesByRegionChart'>
+    <div class="row" [style.height.px]="pieGridChartHeightPx">
+        <ngx-charts-pie-grid
+            [scheme]="casesByRegionChart.options.colorScheme"
+            [results]="casesByRegionChart.data">
+        </ngx-charts-pie-grid>
     </div>
 </div>
 <br>

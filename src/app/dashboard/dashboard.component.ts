@@ -6,6 +6,7 @@ import { DataService } from '../core/services/data.service';
 import { ChartService } from '../core/services/chart.service';
 import { DateUtility } from '../core/utility/dateutility';
 import { IChartOptions } from '../core/interfaces/chartoptions';
+import { IChartPieGrid } from '../core/interfaces/chartpiegrid';
 
 @Component({
   selector: 'dashboard',
@@ -17,14 +18,17 @@ export class DashboardComponent implements OnInit {
   errorMessage: string;
 
   numberChartHeightPx: number;
+  pieGridChartHeightPx: number;
 
   totalCasesAsOf: Date;
   casesProgressionAsOf: Date;
   dailyCasesAsOf: Date;
+  casesByRegionAsOf: Date;
 
   casesProgressionChart: IChartLine;
   dailyCasesChart: IChartBar;
   todaysCasesChart: IChartNumbers;
+  casesByRegionChart: IChartPieGrid;
   //#endregion
 
   //#region Constructors
@@ -50,7 +54,15 @@ export class DashboardComponent implements OnInit {
         this.casesProgressionAsOf = this.dailyCasesAsOf;
       },
       error: err => this.errorMessage
-  });
+    });
+
+    this.dataService.getCasesHistoricalDetailed().subscribe({
+      next: casesHistoricalDetailed => {
+        this.casesByRegionChart = this.chartDataService.getCaseByRegion(casesHistoricalDetailed);
+        this.casesByRegionAsOf = new Date();
+      },
+      error: err => this.errorMessage
+    });
     
     this.adjustElementsOnResize(window.innerWidth);
   }
@@ -67,10 +79,12 @@ export class DashboardComponent implements OnInit {
   private adjustElementsOnResize(windowWidth: number) {
     if(windowWidth < 600) {
       this.numberChartHeightPx = 250;
+      this.pieGridChartHeightPx = 900;
       this.switchChartOptionsOnResize(this.casesProgressionChart.options, false);
       this.switchChartOptionsOnResize(this.dailyCasesChart.options, false);
     } else {
       this.numberChartHeightPx = 150;
+      this.pieGridChartHeightPx = 200;
       this.switchChartOptionsOnResize(this.casesProgressionChart.options, true);
       this.switchChartOptionsOnResize(this.dailyCasesChart.options, true);
     }

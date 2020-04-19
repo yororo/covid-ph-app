@@ -10,6 +10,11 @@ import { IChartNumbersData } from '../interfaces/chartnumbersdata';
 import { IChartNumbersOption } from '../interfaces/chartnumbersoption';
 import { GlobalConstants } from '../globalconstants';
 import { DateUtility } from '../utility/dateutility';
+import { ICasesHistoricalDetailedRaw } from '../interfaces/caseshistoricaldetailedraw';
+import { IChartPieGrid } from '../interfaces/chartpiegrid';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { IChartPieGridData } from '../interfaces/chartpiegriddata';
+import { IChartPieGridOption } from '../interfaces/chartpiegridoptions';
 
 @Injectable({
     providedIn: 'root'
@@ -27,6 +32,10 @@ export class ChartService {
 
     getCaseProgression(casesHistorical: ICasesHistoricalRaw): IChartLine {
         return this.generateCasesProgressionData(casesHistorical);
+    }
+
+    getCaseByRegion(casesHistorical: ICasesHistoricalDetailedRaw[]): IChartPieGrid {
+        return this.generateCasesByRegion(casesHistorical);
     }
     //#endregion
 
@@ -107,6 +116,34 @@ export class ChartService {
         };
     }
 
+    private generateCasesByRegion(casesHistoricalDetailedArr: ICasesHistoricalDetailedRaw[]): IChartPieGrid {
+
+        let dataArr: IChartPieGridData[] = [];
+        let dataName: string;
+        let data: IChartPieGridData;
+        console.log(casesHistoricalDetailedArr.length);
+        for(let casesHistoricalDetailed of casesHistoricalDetailedArr) {
+            dataName = (casesHistoricalDetailed.resident_of == '-' || casesHistoricalDetailed.resident_of == 'TBA') ? 'TBA' : casesHistoricalDetailed.resident_of;
+            data = dataArr.find(d => d.name == dataName);
+
+            if (data == null) {
+                dataArr.push({
+                    name: dataName,
+                    value: 1
+                });
+            } else {
+                data.value += 1;
+            }
+
+            data = null;
+        }
+
+        return {
+            data: dataArr.sort((x, y) => (x.value < y.value) ? 1 : -1).splice(0, 6),
+            options: this.getCasesByRegionChartOptions()
+        };
+    }
+
     private getTodaysCasesChartOptions(): IChartNumbersOption {
         let options: IChartNumbersOption = {
             cardColor: '#232837',
@@ -148,6 +185,17 @@ export class ChartService {
             xAxisTicks: this.getAxisTicks(firstDate, lastDate, increments),
             colorScheme: {
                 domain: ['#5AA454']
+            }
+        }
+        return options;
+    }
+
+    private getCasesByRegionChartOptions(): IChartPieGridOption {
+        let options: IChartPieGridOption = {
+            legend: false,
+            showLabels: true,
+            colorScheme: {
+                domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
             }
         }
         return options;
