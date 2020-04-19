@@ -62,8 +62,11 @@
 <hr style="width:50%">
 <br>
 <div align="center">
-    <h2>Cases by Region</h2>
-    <p class="small">as of {{ casesByRegionAsOf | date: 'MMM d, y' }}</p>
+    <h2>Cases by Region</h2>  
+    <p class="small">
+        Top 6
+        <br>as of {{ casesByRegionAsOf | date: 'MMM d, y' }}
+    </p>
 </div>
 <div class="container" align="center" *ngIf='casesByRegionChart'>
     <div class="row" [style.height.px]="pieGridChartHeightPx">
