@@ -26,8 +26,8 @@ export class DataService {
         );
     }
 
-    getCasesHistoricalDetailed(): Observable<ICasesHistoricalDetailedRaw[]> {
-        return this.http.get<ICasesHistoricalDetailedRaw[]>(environment.apiUrlCoronavirusPhApi).pipe(
+    getCasesHistoricalDetailed(): Observable<ICasesHistoricalDetailedRaw> {
+        return this.http.get<ICasesHistoricalDetailedRaw>(environment.apiUrlCoronavirusPhApi).pipe(
             catchError(this.handleError)
         );
     }

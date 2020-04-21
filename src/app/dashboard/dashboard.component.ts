@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
   totalCasesAsOf: Date;
   casesProgressionAsOf: Date;
   dailyCasesAsOf: Date;
-  casesByRegionAsOf: Date;
+  casesByCityAsOf: Date;
 
   casesProgressionChart: IChartLine;
   dailyCasesChart: IChartBar;
@@ -58,8 +58,8 @@ export class DashboardComponent implements OnInit {
 
     this.dataService.getCasesHistoricalDetailed().subscribe({
       next: casesHistoricalDetailed => {
-        this.casesByRegionChart = this.chartDataService.getCaseByRegion(casesHistoricalDetailed);
-        this.casesByRegionAsOf = new Date();
+        this.casesByRegionChart = this.chartDataService.getCaseByCity(casesHistoricalDetailed);
+        this.casesByCityAsOf = this.casesByRegionChart.latestDate;
       },
       error: err => this.errorMessage
     });

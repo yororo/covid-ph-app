@@ -34,8 +34,8 @@ export class ChartService {
         return this.generateCasesProgressionData(casesHistorical);
     }
 
-    getCaseByRegion(casesHistorical: ICasesHistoricalDetailedRaw[]): IChartPieGrid {
-        return this.generateCasesByRegion(casesHistorical);
+    getCaseByCity(casesHistoricalDetailed: ICasesHistoricalDetailedRaw): IChartPieGrid {
+        return this.generateCasesByRegion(casesHistoricalDetailed);
     }
     //#endregion
 
@@ -116,29 +116,31 @@ export class ChartService {
         };
     }
 
-    private generateCasesByRegion(casesHistoricalDetailedArr: ICasesHistoricalDetailedRaw[]): IChartPieGrid {
-
+    private generateCasesByRegion(casesHistoricalDetailed: ICasesHistoricalDetailedRaw): IChartPieGrid {
         let dataArr: IChartPieGridData[] = [];
         let dataName: string;
         let data: IChartPieGridData;
-        console.log(casesHistoricalDetailedArr.length);
-        for(let casesHistoricalDetailed of casesHistoricalDetailedArr) {
-            dataName = (casesHistoricalDetailed.resident_of == '-' || casesHistoricalDetailed.resident_of == 'TBA') ? 'TBA' : casesHistoricalDetailed.resident_of;
+        let latestDate: Date;
+        console.log(casesHistoricalDetailed.data.length);
+        for(let casesHistoricalDetailedData of casesHistoricalDetailed.data) {
+            dataName = (casesHistoricalDetailedData.location == 'For validation') ? 'N/A' : casesHistoricalDetailedData.location;
             data = dataArr.find(d => d.name == dataName);
 
             if (data == null) {
-                dataArr.push({
-                    name: dataName,
-                    value: 1
-                });
+                dataArr.push({ name: dataName, value: 1 });
             } else {
                 data.value += 1;
             }
 
-            data = null;
+            console.log('indexOf: ' + casesHistoricalDetailed.data.indexOf(casesHistoricalDetailedData));
+            if (casesHistoricalDetailed.data.indexOf(casesHistoricalDetailedData) == (casesHistoricalDetailed.data.length - 1)) {
+                latestDate = new Date(casesHistoricalDetailedData.date_of_announcement_to_public);
+            }
         }
 
         return {
+            totalCases: dataArr.length,
+            latestDate: latestDate,
             data: dataArr.sort((x, y) => (x.value < y.value) ? 1 : -1).splice(0, 6),
             options: this.getCasesByRegionChartOptions()
         };
