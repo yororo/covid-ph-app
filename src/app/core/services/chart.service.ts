@@ -68,15 +68,18 @@ export class ChartService {
             }
 
             dateKeyFormatted = DateUtility.getDateStringForKey(new Date(key));
+            // dateKeyFormatted = new Intl.DateTimeFormat('en-GB').format(new Date(key));
 
             confirmedData.push({name: dateKeyFormatted, value: value[GlobalConstants.CASESHISTORICAL_CONFIRMED]});
+            //console.log(dateKeyFormatted + "|" + value[GlobalConstants.CASESHISTORICAL_CONFIRMED]);
+            // console.log(new Intl.DateTimeFormat('en-GB').format(new Date(key)));
             deathsData.push({name: dateKeyFormatted, value: value[GlobalConstants.CASESHISTORICAL_DEATHS]});
             recoveredData.push({name: dateKeyFormatted, value: value[GlobalConstants.CASESHISTORICAL_RECOVERED]});
         }
 
         return {
             data: [ 
-                {name: GlobalConstants.CHART_CASESPROG_LABEL_CONFIRMED, series: confirmedData}, 
+                {name: GlobalConstants.CHART_CASESPROG_LABEL_CONFIRMED, series: confirmedData},
                 {name: GlobalConstants.CHART_CASESPROG_LABEL_DEATHS, series: deathsData}, 
                 {name: GlobalConstants.CHART_CASESPROG_LABEL_RECOVERED, series: recoveredData}
             ],

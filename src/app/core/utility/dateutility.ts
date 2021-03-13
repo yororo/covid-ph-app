@@ -16,13 +16,13 @@ export abstract class DateUtility {
     }
 
     static getDateStringForKey(date: Date): string {
-        const [{ value: mo }, , { value: da }, , , ] = new Intl.DateTimeFormat(undefined, 
+        const [{ value: mo }, , { value: da }, , { value: ye }] = new Intl.DateTimeFormat(undefined, 
             {
                 year: this.FORMAT_NUMERIC, 
                 month: this.FORMAT_SHORT, 
                 day: this.FORMAT_NUMERIC
             }).formatToParts(date);
-        return `${mo}-${da}`;
+        return `${mo}-${da}-${ye}`;
     }
 
     static getLastDateFromCasesHistoricalRaw(casesHistorical: ICasesHistoricalRaw): Date {
